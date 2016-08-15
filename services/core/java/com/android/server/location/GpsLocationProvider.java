@@ -298,6 +298,9 @@ public class GpsLocationProvider implements LocationProviderInterface {
 
     // true if we have network connectivity
     private boolean mNetworkAvailable;
+    
+    //hack for old gps blob.Don't set native_set_agps_server during boot.
+    private boolean mFirstBoot = false;
 
     // states for injecting ntp and downloading xtra data
     private static final int STATE_PENDING_NETWORK = 0;
@@ -954,11 +957,12 @@ public class GpsLocationProvider implements LocationProviderInterface {
                 Log.e(TAG, "unable to parse SUPL_PORT: " + portString);
             }
         }
-        if (mSuplServerHost != null
+        if (mFirstBoot && mSuplServerHost != null
                 && mSuplServerPort > TCP_MIN_PORT
                 && mSuplServerPort <= TCP_MAX_PORT) {
             native_set_agps_server(AGPS_TYPE_SUPL, mSuplServerHost, mSuplServerPort);
         }
+        mFirstBoot = true;
     }
 
     /**
